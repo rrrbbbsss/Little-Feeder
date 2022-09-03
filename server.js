@@ -11,7 +11,7 @@ require("dotenv").config();
 SESSION_SECRET = process.env.SESSION_SECRET;
 
 const sess = {
-  secret: SESSION_SECRET,
+  secret: SSECRET,
   cookie: {},
   resave: false,
   saveUninitialized: true,
