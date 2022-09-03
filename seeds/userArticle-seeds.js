@@ -11,6 +11,11 @@ const Data = [
     article_id: 2,
     unread: false,
   },
+  {
+    user_id: 1,
+    article_id: 3,
+    unread: false,
+  },
   // make sure this info is consistent
   // (user has a feed of the article...)
   {
