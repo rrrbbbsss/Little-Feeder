@@ -6,7 +6,7 @@ const articleRoutes = require("./article-routes");
 const feedRoutes = require("./feed-routes");
 const homeRoutes = require("./home-routes");
 
-//router.use("/api", apiRoutes);
+router.use("/api", apiRoutes);
 router.use("/login", loginRoutes);
 router.use("/signup", signupRoutes);
 router.use("/article", articleRoutes);
