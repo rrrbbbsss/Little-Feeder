@@ -8,7 +8,7 @@ const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 require("dotenv").config();
-SESSION_SECRET = process.env.SESSION_SECRET;
+SSECRET = process.env.SSECRET;
 
 const sess = {
   secret: SSECRET,
