@@ -1,6 +1,8 @@
 const seedUser = require("./user-seeds");
-//const seedPost = require("./post-seeds");
-//const seedComment = require("./article-seeds");
+const seedFeed = require("./feed-seeds");
+const seedUserFeed = require("./userFeed-seeds");
+const seedArticle = require("./article-seeds");
+const seedUserArticle = require("./userArticle-seeds");
 const dbconn = require("../config/connection");
 
 const seedAll = async () => {
@@ -10,11 +12,17 @@ const seedAll = async () => {
   await seedUser();
   console.log("\n----- USER SEEDED -----\n");
 
-  //await seedPost();
-  //console.log("\n----- POST SEEDED -----\n");
+  await seedFeed();
+  console.log("\n----- FEED SEEDED -----\n");
 
-  //await seedComment();
-  //console.log("\n----- COMMENT TAGS SEEDED -----\n");
+  await seedUserFeed();
+  console.log("\n----- USER FEED SEEDED -----\n");
+
+  await seedArticle();
+  console.log("\n----- ARTICLE SEEDED -----\n");
+
+  await seedUserArticle();
+  console.log("\n----- USER ARTICLE SEEDED -----\n");
 
   process.exit(0);
 };
