@@ -42,7 +42,7 @@ UserFeed.init(
   {
     // todo: might need hooks?
     sequelize: dbconn,
-    timestamps: false,
+    timestamps: true,
     freezeTableName: true,
     underscored: true,
     modelName: "userFeed",

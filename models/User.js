@@ -53,9 +53,12 @@ User.init(
       // hash passwords hooks
       beforeCreate: hashPassword,
       beforeBulkCreate: async (arr) => {
-        for (const user of arr) {
+        for (let user of arr) {
+          console.log(user.dataValues);
           user.dataValues = await hashPassword(user.dataValues);
+          console.log(user.dataValues);
         }
+        console.log("\n\n\n", arr);
         return arr;
       },
       beforeUpdate: hashPassword,

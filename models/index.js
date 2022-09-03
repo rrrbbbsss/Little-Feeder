@@ -7,6 +7,7 @@ const UserArticle = require("./UserArticle");
 // Article *<--->1 Feed
 Feed.hasMany(Article, {
   foreignKey: "feed_id",
+  onDelete: "CASCADE",
 });
 Article.belongsTo(Feed, {
   foreignKey: "feed_id",
@@ -58,6 +59,7 @@ User.hasMany(UserArticle, {
 });
 Article.hasMany(UserArticle, {
   foreignKey: "article_id",
+  onDelete: "CASCADE",
 });
 
 module.exports = { User, Feed, UserFeed, Article, UserArticle };
