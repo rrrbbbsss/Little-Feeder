@@ -6,6 +6,7 @@ const exphbs = require("express-handlebars");
 const hbs = exphbs.create({});
 const session = require("express-session");
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
+const scheduleWorker = require("./utils/scheduler");
 
 require("dotenv").config();
 SSECRET = process.env.SSECRET;
@@ -36,5 +37,9 @@ app.use(routes);
 
 // turn on connection to db and server
 dbconn.sync({ force: false }).then(() => {
-  app.listen(PORT, () => console.log("Now listening"));
+  app.listen(PORT, () => {
+    console.log("Now listening");
+    scheduleWorker();
+    console.log("Worker Scheduled");
+  });
 });
