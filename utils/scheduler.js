@@ -1,4 +1,3 @@
-const { Article } = require("../models");
 const Models = require("../models");
 const spawnWorkers = require("./worker");
 
