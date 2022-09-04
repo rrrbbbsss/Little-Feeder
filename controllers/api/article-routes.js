@@ -1,6 +1,7 @@
 const router = require("express").Router();
-const { Article, UserArticle, Feed, UserFeed } = require("../../models");
+const { Article, UserArticle, Feed, UserFeed, User } = require("../../models");
 const dbconn = require("../../config/connection");
+const { Op } = require("sequelize");
 const { PUB, AAA } = require("../../utils/auth");
 
 //////////////////////////////////////////////////////
@@ -8,7 +9,7 @@ const { PUB, AAA } = require("../../utils/auth");
 //////////////////////////////////////////////////////
 //
 // description: get articles (of the requesting user)
-// path: /api/article
+// path: /api/article?page=1&unread=true
 // method: GET
 //
 //////////////////////////////////////////////////////
@@ -23,12 +24,19 @@ const { PUB, AAA } = require("../../utils/auth");
 //////////////////////////////////////////////////////
 
 // GET /api/article
-// todo: redo this...
 // todo: better error messaging
 router.get("/", AAA, (req, res) => {
+  //todo validate queries
+  const offset = (req.query.page || 0) * 100;
+  const unread = req.query.unread ? req.query.unread === "true" : [true, false];
+  //  const
   UserArticle.findAll({
+    offset: offset,
+    limit: 100,
+    // todo: sort by published date...
     where: {
       user_id: req.session.user_id,
+      unread: unread,
     },
     attributes: ["unread"],
     include: [
@@ -38,6 +46,7 @@ router.get("/", AAA, (req, res) => {
         include: [
           {
             model: Feed,
+            as: "feed",
             attributes: ["id", "url"],
             include: [{ model: UserFeed, attributes: ["description"] }],
           },
@@ -45,9 +54,12 @@ router.get("/", AAA, (req, res) => {
       },
     ],
   })
-    .then((dbData) => {
-      const feeds = dbData.map((feed) => feed.get({ plain: true }));
-      res.json(feeds);
+    .then(async (dbData) => {
+      const articles = dbData.map((article) => article.get({ plain: true }));
+      const count = await UserArticle.count({
+        where: { user_id: req.session.user_id, unread: unread },
+      });
+      res.json({ count, pages: Math.ceil(count / 100), articles });
     })
     .catch((err) => {
       console.log(err);
@@ -80,5 +92,22 @@ router.put("/:id", AAA, (req, res) => {
       res.status(500).json({ message: "server put article error" });
     });
 });
+
+// for testing:
+//router.post("/", PUB, (req, res) => {
+//  Article.propogateBulkCreate(req.body.articles, req.body.feed_id, {
+//    Article,
+//    UserArticle,
+//    Feed,
+//    UserFeed,
+//  })
+//    .then((dbData) => {
+//      res.json(dbData);
+//    })
+//    .catch((err) => {
+//      console.log(err);
+//      res.status(500).json({ message: "server post article error" });
+//    });
+//});
 
 module.exports = router;
