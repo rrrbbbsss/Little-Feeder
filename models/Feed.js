@@ -1,5 +1,6 @@
 const { Model, DataTypes } = require("sequelize");
 const dbconn = require("../config/connection");
+const spawnWorkers = require("../utils/worker");
 
 class Feed extends Model {
   static propogateCreate(req, models) {
@@ -8,6 +9,10 @@ class Feed extends Model {
       defaults: { url: req.body.url },
     }).then(([dbData, created]) => {
       const feed = dbData.get({ plain: true });
+      if (created) {
+        // spawnWorkers([feed], 0);
+        // console.log(feed);
+      }
       return models.UserFeed.findOrCreate({
         where: {
           user_id: req.session.user_id,
