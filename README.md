@@ -12,6 +12,7 @@ DB_NAME='little_feeder_db'
 DB_USER='<your user>'
 DB_PASS='<your password>'
 SSECRET='<your session secret>'
+SCHEDWK='<window to grab feeds in seconds>'
 ```
 
 setup the db and seed it with the following command:
