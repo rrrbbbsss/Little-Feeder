@@ -23,7 +23,7 @@ const schedule = async () => {
 };
 
 const scheduleWorker = () => {
-  setInterval(schedule, 10000);
+  setInterval(schedule, SCHEDWK);
 };
 
 module.exports = scheduleWorker;
