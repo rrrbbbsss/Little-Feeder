@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const { User } = require("../../models");
 const { PUB, AAA } = require("../../utils/auth");
+const { valCheck } = require("../../utils/validate");
+const { body } = require("express-validator");
 
 //////////////////////////////////////////////////////
 //////////////// User API routes: ////////////////////
@@ -59,63 +61,117 @@ function loginUser(req, res, dbData, message) {
 }
 
 // POST /api/user (create new user)
-router.post("/", PUB, (req, res) => {
-  // expects: { username: "blah", email: "blah@blah.com", password: "asdfasdf"}
-  // todo: better messaging of errors
-  User.create({
-    username: req.body.username,
-    email: req.body.email,
-    password: req.body.password,
-  })
-    .then((dbData) => {
-      loginUser(req, res, dbData, "User Created");
+const r_post = () => {
+  const valRules = [
+    body("username")
+      .exists()
+      .withMessage("username must be supplied")
+      .isLength({ min: 1 })
+      .withMessage("username must be at least 1 char long")
+      .isLength({ max: 32 })
+      .withMessage("username must be at max 32 chars long")
+      .trim()
+      .isAlphanumeric()
+      .withMessage("username must be alphanumeris"),
+    body("email")
+      .exists()
+      .withMessage("email must be supplied")
+      .isEmail()
+      .withMessage("email must be valid")
+      .normalizeEmail(),
+    body("password")
+      .exists()
+      .withMessage("password must be supplied")
+      .isLength({ min: 8 })
+      .withMessage("password must be at least 8 char long")
+      .isLength({ max: 32 })
+      .withMessage("password must be at max 32 char long"),
+  ];
+  router.post("/", PUB, valRules, valCheck, (req, res) => {
+    User.create({
+      username: req.body.username,
+      email: req.body.email,
+      password: req.body.password,
     })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ message: "server user creation error" });
-    });
-});
+      .then((dbData) => {
+        loginUser(req, res, dbData, "User Created");
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.errors[0].type === "unique violation") {
+          res.status(409).json({ message: err.errors[0].message });
+          return;
+        }
+        res.status(500).json({ message: "server user creation error" });
+      });
+  });
+};
 
 // POST /api/user/login (login user)
-router.post("/login", PUB, (req, res) => {
-  // expects: { email: "blah@blah.com", password: "asdfasdf"}
-  // todo: better messaging of errors
-  User.findOne({
-    where: {
-      email: req.body.email,
-    },
-  })
-    .then((dbData) => {
-      // verify user
-      if (!dbData) {
-        res.status(400).json({ message: "Invalid Credentials" });
-        return;
-      }
-      // verify password
-      const validPassword = dbData.checkPassword(req.body.password);
-      if (!validPassword) {
-        res.status(400).json({ message: "Incorrect Password for user" });
-        return;
-      }
-      //login user
-      loginUser(req, res, dbData, "User logged In");
+const r_postLogin = () => {
+  const valRules = [
+    body("email")
+      .exists()
+      .withMessage("email must be supplied")
+      .isEmail()
+      .withMessage("email must be valid")
+      .normalizeEmail(),
+    body("password")
+      .exists()
+      .withMessage("password must be supplied")
+      .isLength({ min: 8 })
+      .withMessage("password must be at least 8 char long")
+      .isLength({ max: 32 })
+      .withMessage("password must be at max 32 char long"),
+  ];
+  router.post("/login", PUB, valRules, valCheck, (req, res) => {
+    User.findOne({
+      where: {
+        email: req.body.email,
+      },
     })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ message: "server login error" });
-    });
-});
+      .then((dbData) => {
+        // verify user
+        if (!dbData) {
+          res
+            .status(400)
+            .json({ message: "Invalid Email or Password for user" });
+          return;
+        }
+        // verify password
+        const validPassword = dbData.checkPassword(req.body.password);
+        if (!validPassword) {
+          res
+            .status(400)
+            .json({ message: "Invalid Email or Password for user" });
+          return;
+        }
+        //login user
+        loginUser(req, res, dbData, "User logged In");
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ message: "server login error" });
+      });
+  });
+};
 
 // POST /api/user/logout (logout user)
-router.post("/logout", AAA, (req, res) => {
-  // expects: {}
-  if (req.session.loggedIn) {
-    req.session.destroy(() => {
-      res.status(204).end();
-    });
-  } else {
-    res.status(404).end();
-  }
-});
+const r_postLogout = () => {
+  router.post("/logout", AAA, (req, res) => {
+    // expects: {}
+    if (req.session.loggedIn) {
+      req.session.destroy(() => {
+        res.status(204).end();
+      });
+    } else {
+      res.status(404).end();
+    }
+  });
+};
+
+r_post();
+r_postLogin();
+r_postLogout();
 
 module.exports = router;

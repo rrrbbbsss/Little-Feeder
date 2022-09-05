@@ -2,6 +2,8 @@ const router = require("express").Router();
 const { User, Feed, UserFeed, Article, UserArticle } = require("../../models");
 const dbconn = require("../../config/connection");
 const { PUB, AAA } = require("../../utils/auth");
+const { valCheck } = require("../../utils/validate");
+const { body } = require("express-validator");
 
 //////////////////////////////////////////////////////
 //////////////// Feed API routes: ////////////////////
@@ -47,130 +49,159 @@ const { PUB, AAA } = require("../../utils/auth");
 //////////////////////////////////////////////////////
 
 // GET /api/feed
-// todo: better error messaging
-router.get("/", AAA, (req, res) => {
-  UserFeed.findAll({
-    where: {
-      user_id: req.session.user_id,
-    },
-    attributes: [
-      [dbconn.col("Feed.id"), "id"],
-      [dbconn.col("Feed.url"), "url"],
-      "description",
-      "createdAt",
-    ],
-    order: [["createdAt", "DESC"]],
-    include: [
-      {
-        model: Feed,
-        attributes: [],
-      },
-    ],
-  })
-    .then((dbData) => {
-      const feeds = dbData.map((feed) => feed.get({ plain: true }));
-      res.json(feeds);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ message: "server get feed error" });
-    });
-});
-
-// GET /api/feed/:id
-// todo: better error messaging
-router.get("/:id", AAA, (req, res) => {
-  UserFeed.findOne({
-    where: {
-      feed_id: req.params.id,
-      user_id: req.session.user_id,
-    },
-    attributes: [
-      [dbconn.col("Feed.id"), "id"],
-      [dbconn.col("Feed.url"), "url"],
-      "description",
-      "createdAt",
-    ],
-    order: [["createdAt", "DESC"]],
-    include: [
-      {
-        model: Feed,
-        attributes: [],
-      },
-    ],
-  })
-    .then((dbData) => {
-      if (!dbData) {
-        res.status(404).json({ message: "No feed found with this id" });
-        return;
-      }
-      const feed = dbData.get({ plain: true });
-      res.json(feed);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ message: "server get feed error" });
-    });
-});
-
-// POST /api/feed
-// todo: better error messaging
-router.post("/", AAA, (req, res) => {
-  // expects: { url: "https://blah.com", description: "asdf"}
-  // todo: validate body before attempting to create feed
-  Feed.propogateCreate(req, { Feed, UserFeed })
-    .then(([dbData, created]) => {
-      feed = dbData.get({ plain: true });
-      res.json(feed);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ message: "server post feed error" });
-    });
-});
-
-// PUT /api/feed/:id
-// todo: better error messaging
-router.put("/:id", AAA, (req, res) => {
-  // expects: { description: "asdf" }
-  // todo: validate body before attempting to update feed
-  UserFeed.update(
-    {
-      description: req.body.description,
-    },
-    {
+const r_get = () => {
+  router.get("/", AAA, (req, res) => {
+    UserFeed.findAll({
       where: {
         user_id: req.session.user_id,
-        feed_id: req.params.id,
       },
-    }
-  )
-    .then((dbData) => {
-      // todo: if it doens't find resource, return a better status
-      res.json(dbData);
+      attributes: [
+        [dbconn.col("Feed.id"), "id"],
+        [dbconn.col("Feed.url"), "url"],
+        "description",
+        "createdAt",
+      ],
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: Feed,
+          attributes: [],
+        },
+      ],
     })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ message: "server put feed error" });
-    });
-});
+      .then((dbData) => {
+        const feeds = dbData.map((feed) => feed.get({ plain: true }));
+        res.json(feeds);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ message: "server get feed error" });
+      });
+  });
+};
+
+// GET /api/feed/:id
+const r_getId = () => {
+  router.get("/:id", AAA, (req, res) => {
+    UserFeed.findOne({
+      where: {
+        feed_id: req.params.id,
+        user_id: req.session.user_id,
+      },
+      attributes: [
+        [dbconn.col("Feed.id"), "id"],
+        [dbconn.col("Feed.url"), "url"],
+        "description",
+        "createdAt",
+      ],
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: Feed,
+          attributes: [],
+        },
+      ],
+    })
+      .then((dbData) => {
+        if (!dbData) {
+          res
+            .status(404)
+            .json({ message: "No feed found with this id for this user" });
+          return;
+        }
+        const feed = dbData.get({ plain: true });
+        res.json(feed);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ message: "server get feed error" });
+      });
+  });
+};
+
+// POST /api/feed
+const r_post = () => {
+  const valRules = [
+    body("url")
+      .exists()
+      .withMessage("url must be supplied")
+      .isURL({ protocols: ["http", "https"] })
+      .withMessage("url must be a valid url"),
+    body("description")
+      .exists()
+      .withMessage("description must be supplied")
+      .trim()
+      .isLength({ max: 2048 })
+      .withMessage("description must be at max 2048 char long"),
+  ];
+  router.post("/", AAA, valRules, valCheck, (req, res) => {
+    Feed.propogateCreate(req, { Feed, UserFeed })
+      .then(([dbData, created]) => {
+        feed = dbData.get({ plain: true });
+        res.json(feed);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ message: "server post feed error" });
+      });
+  });
+};
+
+// PUT /api/feed/:id
+const r_putId = () => {
+  const valRules = [
+    body("description")
+      .exists()
+      .withMessage("description must be supplied")
+      .trim()
+      .isLength({ max: 2048 })
+      .withMessage("description must be at max 2048 char long"),
+  ];
+  router.put("/:id", AAA, valRules, valCheck, (req, res) => {
+    UserFeed.update(
+      {
+        description: req.body.description,
+      },
+      {
+        where: {
+          user_id: req.session.user_id,
+          feed_id: req.params.id,
+        },
+      }
+    )
+      .then((dbData) => {
+        // todo: if it doens't find resource, return a better status
+        res.json(dbData);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ message: "server put feed error" });
+      });
+  });
+};
 
 // DELETE /api/feed/:id
-// todo: better error messaging
-router.delete("/:id", AAA, (req, res) => {
-  // expects: {}
-  Feed.propogateDelete(req, { Feed, UserFeed, Article, UserArticle })
-    .then((dbData) => {
-      if (dbData === 0) {
-        res.status(404).json({ message: "No feed found with this id" });
-        return;
-      }
-      res.json(dbData);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ message: "server delete feed error" });
-    });
-});
+const r_deleteId = () => {
+  router.delete("/:id", AAA, (req, res) => {
+    Feed.propogateDelete(req, { Feed, UserFeed, Article, UserArticle })
+      .then((dbData) => {
+        if (dbData === 0) {
+          res.status(404).json({ message: "No feed found with this id" });
+          return;
+        }
+        res.json(dbData);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ message: "server delete feed error" });
+      });
+  });
+};
+
+r_get();
+r_getId();
+r_post();
+r_putId();
+r_deleteId();
 
 module.exports = router;
