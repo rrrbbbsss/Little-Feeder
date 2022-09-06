@@ -49,33 +49,24 @@ class Article extends Model {
 Article.init(
   {
     id: {
-      // todo: maybe make the primary key be the hash of the values of the other coloumns
-      //       (make checking to add a new article easier (so we don't add duplicates))
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
     },
     title: {
-      // todo: we might need to tweak this to be longer
       type: DataTypes.STRING,
       // title might be null...
       allowNull: true,
       validate: {
         // make sure it is between 0 and 2048 characters long
-        len: [0, 255],
+        len: [0, 2048],
       },
     },
     published: {
-      // todo: this will be some sort of date string so maybe a different type?
-      type: DataTypes.STRING,
+      type: DataTypes.DATE,
       // might not have a published date...
       allowNull: true,
-      validate: {
-        // todo: make sure it some timestamp
-        // make sure it is between 1 and 2048 characters long
-        len: [1, 2048],
-      },
     },
     url: {
       type: DataTypes.STRING,
