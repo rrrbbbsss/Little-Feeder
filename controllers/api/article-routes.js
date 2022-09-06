@@ -25,7 +25,6 @@ const { query, body } = require("express-validator");
 //////////////////////////////////////////////////////
 
 // GET /api/article
-// todo: better error messaging
 const r_get = () => {
   const valRules = [
     query("unread")
@@ -38,31 +37,35 @@ const r_get = () => {
       .withMessage("page query must be positive number"),
   ];
   router.get("/", AAA, valRules, valCheck, (req, res) => {
-    //todo validate queries
     const offset = (req.query.page - 1 || 0) * 100;
     const unread = req.query.unread
       ? req.query.unread === "true"
       : [true, false];
-    //  const
-    UserArticle.findAll({
+    Article.findAll({
       offset: offset,
       limit: 100,
-      // todo: sort by published date...
-      where: {
-        user_id: req.session.user_id,
-        unread: unread,
-      },
-      attributes: ["unread"],
+      attributes: ["id", "title", "published", "url"],
+      order: [["published", "DESC"]],
       include: [
         {
-          model: Article,
-          attributes: ["id", "title", "published", "url"],
+          model: UserArticle,
+          attributes: ["unread"],
+          required: true,
+          where: {
+            user_id: req.session.user_id,
+            unread: unread,
+          },
+        },
+        {
+          model: Feed,
+          attributes: ["id", "url"],
           include: [
             {
-              model: Feed,
-              as: "feed",
-              attributes: ["id", "url"],
-              include: [{ model: UserFeed, attributes: ["description"] }],
+              model: UserFeed,
+              attributes: ["description"],
+              where: {
+                user_id: req.session.user_id,
+              },
             },
           ],
         },
