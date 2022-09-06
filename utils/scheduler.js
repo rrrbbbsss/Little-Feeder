@@ -19,7 +19,7 @@ const schedule = async () => {
   // calculate the interval to grab each feed within the day
   const feedInterval = Math.floor(SCHEDWK / feeds.length);
   //spawnWorkers(feeds, feedInterval);
-  spawnWorkers(feeds, feedInterval);
+  spawnWorkers(feeds, feedInterval, Models);
 };
 
 const scheduleWorker = () => {

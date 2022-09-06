@@ -135,9 +135,10 @@ const r_post = () => {
       .withMessage("description must be at max 2048 char long"),
   ];
   router.post("/", AAA, valRules, valCheck, (req, res) => {
-    Feed.propogateCreate(req, { Feed, UserFeed })
+    Feed.propogateCreate(req, { Feed, UserFeed, Article, UserArticle })
       .then(([dbData, created]) => {
-        feed = dbData.get({ plain: true });
+        const { feed_id, description, createdAt } = dbData.get({ plain: true });
+        const feed = { id: feed_id, description, createdAt };
         res.json(feed);
       })
       .catch((err) => {

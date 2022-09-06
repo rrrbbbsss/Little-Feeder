@@ -3,19 +3,19 @@ const { Article } = require("../models");
 const Data = [
   {
     title: "blah",
-    published: "todo: timestamp this",
+    published: "2022-09-06T03:15:10.000Z",
     url: "https://blah.blah.com",
     feed_id: 1,
   },
   {
     title: "what",
-    published: "todo: timestamp this",
+    published: "2022-09-06T03:15:10.000Z",
     url: "https://what.what.com",
     feed_id: 1,
   },
   {
     title: "asdf",
-    published: "todo: timestamp this",
+    published: "2022-09-06T03:15:10.000Z",
     url: "https://asdf.asdf.com",
     feed_id: 2,
   },

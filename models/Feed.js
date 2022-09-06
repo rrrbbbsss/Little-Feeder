@@ -10,8 +10,7 @@ class Feed extends Model {
     }).then(([dbData, created]) => {
       const feed = dbData.get({ plain: true });
       if (created) {
-        // spawnWorkers([feed], 0);
-        // console.log(feed);
+        spawnWorkers([feed], 0, models);
       }
       return models.UserFeed.findOrCreate({
         where: {
