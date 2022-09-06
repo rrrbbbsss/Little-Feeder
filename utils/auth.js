@@ -3,16 +3,22 @@ const PUB = (req, res, next) => {
   next();
 };
 
-const AAA = (req, res, next) => {
+const PAA = (req, res, next) => {
   if (!req.session.loggedIn) {
-    // leave this out for now..
-    // res.redirect("/login");
-    console.log("todo: require authentication");
-    next();
+    res.redirect("/login");
   } else {
     // todo: authroization, accounting, auditing...
     next();
   }
 };
 
-module.exports = { PUB, AAA };
+const AAA = (req, res, next) => {
+  if (!req.session.loggedIn) {
+    res.status(403).json({ message: "Unauthorized to Access" });
+  } else {
+    // todo: authroization, accounting, auditing...
+    next();
+  }
+};
+
+module.exports = { PUB, PAA, AAA };

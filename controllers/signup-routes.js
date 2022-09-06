@@ -1,12 +1,12 @@
 const router = require("express").Router();
 const dbconn = require("../config/connection");
-const { PUB, AAA } = require("../utils/auth");
+const { PUB, AAA, PAA } = require("../utils/auth");
 
 router.get("/", PUB, (req, res) => {
   if (req.session.loggedIn) {
     res.redirect("/feed");
   } else {
-    res.render("signup");
+    res.render("signup", { loggedIn: req.session.loggedIn });
   }
 });
 

@@ -63,16 +63,6 @@ function loginUser(req, res, dbData, message) {
 // POST /api/user (create new user)
 const r_post = () => {
   const valRules = [
-    body("username")
-      .exists()
-      .withMessage("username must be supplied")
-      .isLength({ min: 1 })
-      .withMessage("username must be at least 1 char long")
-      .isLength({ max: 32 })
-      .withMessage("username must be at max 32 chars long")
-      .trim()
-      .isAlphanumeric()
-      .withMessage("username must be alphanumeris"),
     body("email")
       .exists()
       .withMessage("email must be supplied")
@@ -89,7 +79,6 @@ const r_post = () => {
   ];
   router.post("/", PUB, valRules, valCheck, (req, res) => {
     User.create({
-      username: req.body.username,
       email: req.body.email,
       password: req.body.password,
     })
@@ -99,7 +88,8 @@ const r_post = () => {
       .catch((err) => {
         console.log(err);
         if (err.errors[0].type === "unique violation") {
-          res.status(409).json({ message: err.errors[0].message });
+          //res.status(409).json({ message: err.errors[0].message });
+          res.status(409).json({ message: "email in use" });
           return;
         }
         res.status(500).json({ message: "server user creation error" });
