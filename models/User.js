@@ -21,17 +21,6 @@ User.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    username: {
-      type: DataTypes.STRING(32),
-      allowNull: false,
-      unique: true,
-      validate: {
-        // usernames can only be alphanumerics
-        isAlphanumeric: true,
-        // make sure it is between 1 and 32 characters long
-        len: [1, 32],
-      },
-    },
     email: {
       type: DataTypes.STRING(255),
       allowNull: false,
