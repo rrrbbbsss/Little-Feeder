@@ -2,10 +2,10 @@ const { Feed } = require("../models");
 
 const Data = [
   {
-    url: "https://blah.blah.com",
+    url: "http://www.reddit.com/.rss",
   },
   {
-    url: "https://what.what.com",
+    url: "http://www.reddit.com/r/news/.rss",
   },
 ];
 

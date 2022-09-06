@@ -1,4 +1,4 @@
-var mysql = require("mysql2/promise");
+/* var mysql = require("mysql2/promise");
 
 require("dotenv").config();
 const DB_NAME = process.env.DB_NAME;
@@ -20,4 +20,4 @@ const schema = async () => {
   process.exit(0);
 };
 
-schema();
+schema(); */

@@ -10,11 +10,11 @@ router.use("/api", apiRoutes);
 router.use("/login", loginRoutes);
 router.use("/signup", signupRoutes);
 router.use("/article", articleRoutes);
-router.use("/feed", feedRoutes);
+router.use("/feed", feedRoutes); 
 router.use("/", homeRoutes);
 
 router.use((req, res) => {
   res.status(404).end();
-});
+}); 
 
 module.exports = router;

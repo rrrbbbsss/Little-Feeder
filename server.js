@@ -9,10 +9,10 @@ const SequelizeStore = require("connect-session-sequelize")(session.Store);
 const scheduleWorker = require("./utils/scheduler");
 
 require("dotenv").config();
-SSECRET = process.env.SSECRET;
+//SSECRET = process.env.SSECRET;
 
 const sess = {
-  secret: SSECRET,
+  secret: "super secret secret",
   cookie: {},
   resave: false,
   saveUninitialized: true,
