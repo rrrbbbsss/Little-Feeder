@@ -1,0 +1,92 @@
+.flex-box {
+    position: relative;
+      display: flex;
+  justify-content: space-between;
+      list-style: none;
+      text-align: right;
+    }
+    
+   ul,li {
+    width: 100%;
+      position: relative;
+      display: flex;
+      text-decoration: none;
+      align-items: center;
+    justify-items: space-between;
+      }
+    
+      ul,li a{
+        left: 10px;
+        justify-content: space-between;
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        color: black;
+        position: relative;
+        display: flex;
+      list-style: none;
+      text-decoration: none;
+      font-size: 25px;
+      width: 100%;
+    
+  
+  
+    }
+  .flex-container{
+    
+    align-items: center;
+    justify-content: space-between;
+   text-align: right;
+    position: relative;
+    flex-direction: row;
+    background-color: grey;
+    width: 100%;
+    height:100vh;
+    border-bottom: 20px;
+  }
+
+  .flex-container1>div{
+    justify-content: space-between;
+  width: 100%;
+    margin: 0%;
+    border: bottom 20px; ;
+    position: relative;
+    display: flex;
+    border-style: solid;
+    border-bottom: black;
+    font-size: 20px;
+
+  }
+
+  .flex-container1div button {
+    position: absolute;
+    background-color: white;
+    color: black;
+    box-sizing: border-box;
+
+  }
+
+  .flex-container2>div{
+    justify-content: space-between;
+    top:5cm;
+    width: 100%;
+      margin: 0%;
+      border: bottom 20px; ;
+      position: relative;
+      display: flex;
+      border-style: solid;
+      border-bottom: black;
+      font-size: 20px;
+  
+
+    }
+
+
+  .flex-container2div button {
+    width: 100%;
+    top:1cm;
+    text-align: right;
+    position: absolute;
+    display: flex;
+    background-color: white;
+    color: black;
+    border: 2px solid #070907; /* Green */
+  }
