@@ -2,28 +2,34 @@
   <div
     class="col-start-2 col-span-10 lg:col-start-4 lg:col-span-6 2xl:col-start-5 2xl:col-span-4"
   >
-    <form class="bg-zinc-300 border border-zinc-400 p-2 m-4" id="account-form">
-      <div class="p-2">
-        <label for="email-input" class="block">Email:</label>
-        <input type="text" class="p-1 w-full" id="email-input" />
+    <div class="bg-zinc-300 border border-zinc-400 p-2 m-4">
+      <form class="" id="account-form">
+        <div class="p-2">
+          <label for="email-input" class="block">Email:</label>
+          <input type="text" class="p-1 w-full" id="email-input" />
+        </div>
+        <div class="p-2">
+          <label for="password-input" class="block">Password:</label>
+          <input type="password" class="p-1 w-full" id="password-input" />
+        </div>
+        <p class="p-2 text-rose-700" id="error-text">
+          <br />
+        </p>
+        <div class="flex justify-center">
+          <button
+            class="p-2 m-2 border border-zinc-400 bg-zinc-700 text-white hover:bg-zinc-600"
+          >Sign Up</button>
+        </div>
+      </form>
+      <div class="flex justify-center">
+        <button
+          class="p-2 m-2 mt-0 border border-zinc-400 hover:bg-zinc-400"
+          id="other"
+        >
+          <a href="/login">Log In Instead</a>
+        </button>
       </div>
-      <div class="p-2">
-        <label for="password-input" class="block">Password:</label>
-        <input type="password" class="p-1 w-full" id="password-input" />
-      </div>
-      <p class="p-2 text-rose-700" id="error-text">
-        <br />
-      </p>
-      <button
-        class="p-2 m-2 border border-zinc-400 bg-zinc-700 text-white hover:bg-zinc-600"
-      >Sign Up</button>
-      <button
-        class="p-2 m-2 border border-zinc-400 hover:bg-zinc-400"
-        id="other"
-      >
-        <a href="/login">Log In Instead</a>
-      </button>
-    </form>
+    </div>
   </div>
 </div>
 
