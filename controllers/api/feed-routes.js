@@ -4,6 +4,7 @@ const dbconn = require("../../config/connection");
 const { PUB, AAA } = require("../../utils/auth");
 const { valCheck } = require("../../utils/validate");
 const { body } = require("express-validator");
+const { read } = require("feed-reader/dist/cjs/feed-reader.js");
 
 //////////////////////////////////////////////////////
 //////////////// Feed API routes: ////////////////////
@@ -51,24 +52,7 @@ const { body } = require("express-validator");
 // GET /api/feed
 const r_get = () => {
   router.get("/", AAA, (req, res) => {
-    UserFeed.findAll({
-      where: {
-        user_id: req.session.user_id,
-      },
-      attributes: [
-        [dbconn.col("Feed.id"), "id"],
-        [dbconn.col("Feed.url"), "url"],
-        "description",
-        "createdAt",
-      ],
-      order: [["createdAt", "DESC"]],
-      include: [
-        {
-          model: Feed,
-          attributes: [],
-        },
-      ],
-    })
+    Feed.getAll(req, { Feed, UserFeed })
       .then((dbData) => {
         const feeds = dbData.map((feed) => feed.get({ plain: true }));
         res.json(feeds);
@@ -126,7 +110,19 @@ const r_post = () => {
       .exists()
       .withMessage("url must be supplied")
       .isURL({ protocols: ["http", "https"] })
-      .withMessage("url must be a valid url"),
+      .withMessage("url must be a valid url")
+      .custom((value) => {
+        return read(value)
+          .then((val) => {
+            console.log(true);
+            return true;
+          })
+          .catch((error) => {
+            console.log(false);
+            return Promise.reject("test");
+          });
+      })
+      .withMessage("url must be for a valid rss/atom feed"),
     body("description")
       .exists()
       .withMessage("description must be supplied")
@@ -134,7 +130,26 @@ const r_post = () => {
       .isLength({ max: 2048 })
       .withMessage("description must be at max 2048 char long"),
   ];
-  router.post("/", AAA, valRules, valCheck, (req, res) => {
+  router.post("/", AAA, valRules, valCheck, async (req, res) => {
+    const dbData = await UserFeed.findOne({
+      where: {
+        user_id: req.session.user_id,
+      },
+      include: [
+        {
+          model: Feed,
+          where: {
+            url: req.body.url,
+          },
+        },
+      ],
+    });
+    // verify feed
+    if (dbData) {
+      res.status(400).json({ message: "Feed already exists for user" });
+      return;
+    }
+    // otherwise create
     Feed.propogateCreate(req, { Feed, UserFeed, Article, UserArticle })
       .then(([dbData, created]) => {
         const { feed_id, description, createdAt } = dbData.get({ plain: true });
@@ -155,8 +170,8 @@ const r_putId = () => {
       .exists()
       .withMessage("description must be supplied")
       .trim()
-      .isLength({ max: 2048 })
-      .withMessage("description must be at max 2048 char long"),
+      .isLength({ max: 100 })
+      .withMessage("description must be at max 100 char long"),
   ];
   router.put("/:id", AAA, valRules, valCheck, (req, res) => {
     UserFeed.update(
