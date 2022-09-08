@@ -76,7 +76,8 @@ const r_get = () => {
         const count = await UserArticle.count({
           where: { user_id: req.session.user_id, unread: unread },
         });
-        res.json({ count, pages: Math.ceil(count / 100), articles });
+        const pages = Math.ceil(count / 100);
+        res.json({ count, pages, articles });
       })
       .catch((err) => {
         console.log(err);
