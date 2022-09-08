@@ -1,0 +1,23 @@
+{{#if articlePage}}
+  <footer class="bg-zinc-700 text-white p-2" id="footer">
+    <div class="flex justify-between md:justify-center">
+      <button
+        class="p-1 m-1 justify-self-start border-zinc-400 border hover:bg-blue-400"
+        id="article-prev-page"
+      >
+        Prev
+      </button>
+      <div class="p-1 m-1 justify-self-start">
+        Page:
+        <span id="currentPage">1</span>/<span id="totalPage">{{pages}}</span>
+      </div>
+      <button
+        class="p-1 m-1 justify-self-end border-zinc-400 border hover:bg-blue-400"
+        id="article-next-page"
+      >
+        Next
+      </button>
+    </div>
+  </footer>
+  <script src="/javascript/footer.js"></script>
+{{/if}}
