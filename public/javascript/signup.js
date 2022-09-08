@@ -1,6 +1,11 @@
 async function signUpHandler(event) {
   event.preventDefault();
 
+  // prevent "submit" event handling when other button clicked
+  if (event.target.matches("#other")) {
+    return;
+  }
+
   const email = document.querySelector("#email-input").value.trim();
   const password = document.querySelector("#password-input").value.trim();
   const errorText = document.querySelector("#error-text");
