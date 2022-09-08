@@ -20,3 +20,7 @@ setup the db and seed it with the following command:
 
 start the web server with:
 `npm start`
+
+## Deployed Instance
+
+This [link](https://blooming-ocean-86846.herokuapp.com/) will take you to a deployed instance of the app.
