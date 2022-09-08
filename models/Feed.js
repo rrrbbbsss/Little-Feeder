@@ -3,6 +3,26 @@ const dbconn = require("../config/connection");
 const spawnWorkers = require("../utils/worker");
 
 class Feed extends Model {
+  static getAll(req, models) {
+    return models.UserFeed.findAll({
+      where: {
+        user_id: req.session.user_id,
+      },
+      attributes: [
+        [dbconn.col("Feed.id"), "id"],
+        [dbconn.col("Feed.url"), "url"],
+        "description",
+        "createdAt",
+      ],
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: models.Feed,
+          attributes: [],
+        },
+      ],
+    });
+  }
   static propogateCreate(req, models) {
     return models.Feed.findOrCreate({
       where: { url: req.body.url },
@@ -11,6 +31,17 @@ class Feed extends Model {
       const feed = dbData.get({ plain: true });
       if (created) {
         spawnWorkers([feed], 0, models);
+      } else {
+        models.Article.findAll({
+          where: { feed_id: feed.id },
+        }).then((dbData) => {
+          const articles = dbData.map((article) => ({
+            article_id: article.get({ plain: true }).id,
+            user_id: req.session.user_id,
+            unread: true,
+          }));
+          models.UserArticle.bulkCreate(articles, {});
+        });
       }
       return models.UserFeed.findOrCreate({
         where: {
