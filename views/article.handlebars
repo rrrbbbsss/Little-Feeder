@@ -1,5 +1,25 @@
-<div>
-  todo: article page
+<div id="articles">
+  {{#each articles as |article|}}
+    <div class="grid grid-cols-12 gap-2 my-4">
+      <div
+        class="col-start-2 col-span-10 lg:col-start-4 lg:col-span-6 2xl:col-start-5 2xl:col-span-4"
+      >
+        <a
+          href="{{article.url}}"
+          target="_blank"
+          data-id="{{article.id}}"
+          class="group article bg-zinc-300 border border-zinc-400 flex flex-col justify-between"
+        >
+          <div class="p-2 bg-zinc-400 group-hover:bg-blue-600">
+            {{formatDate article.published}}
+          </div>
+          <div class="p-2 group-hover:bg-blue-400">
+            {{article.title}}
+          </div>
+        </a>
+      </div>
+    </div>
+  {{/each}}
 </div>
 
 <script src="/javascript/article.js"></script>

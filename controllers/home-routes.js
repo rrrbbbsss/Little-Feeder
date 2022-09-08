@@ -1,8 +1,8 @@
 const router = require("express").Router();
 const dbconn = require("../config/connection");
-const { PUB, AAA } = require("../utils/auth");
+const { PUB, PAA, AAA } = require("../utils/auth");
 
-router.get("/", AAA, (req, res) => {
+router.get("/", PAA, (req, res) => {
   res.redirect("/article");
 });
 

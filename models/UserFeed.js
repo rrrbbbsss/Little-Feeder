@@ -34,8 +34,8 @@ UserFeed.init(
       // description can be empty
       allowNull: true,
       validate: {
-        // make sure it is between 1 and 2048 characters long
-        len: [0, 2048],
+        // make sure it is between 0 and 100 characters long
+        len: [0, 100],
       },
     },
   },
