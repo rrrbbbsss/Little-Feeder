@@ -3,9 +3,9 @@
 ## Table of Contents
 
 1. [Description](#Description)
-1. [Technologies Used](#Technologies)
+1. [Technologies Used](#Technologies-Used)
 1. [Installation](#Installation)
-1. [Deployed Instance](#Deployed)
+1. [Deployed Instance](#Deployed-Instance)
 1. [Questions](#Questions)
 
 ## Description
