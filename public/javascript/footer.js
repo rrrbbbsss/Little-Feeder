@@ -63,3 +63,4 @@ async function footerHandler(event) {
 }
 
 document.querySelector("#footer").addEventListener("click", footerHandler);
+createArticles("next");
